@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Management Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Shepherd.js for Onboarding Tour -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar bg-dark text-white flex-shrink-0 d-flex flex-column">
+            <div class="d-flex align-items-center justify-content-center text-decoration-none text-white p-3" style="height: 60px;">
+                <i class="bi bi-lightning-charge-fill fs-3 me-2"></i>
+                <span class="fs-4 fw-bold">Enerlytics</span>
+            </div>
+            <nav class="nav nav-pills flex-column p-2 flex-grow-1">
+                <a href="#" class="nav-link active d-flex align-items-center mb-1"><i class="bi bi-grid-1x2-fill me-3 fs-5"></i><span data-lang-key="dashboard">Dashboard</span></a>
+                <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-geo-alt-fill me-3 fs-5"></i><span data-lang-key="deliveryPoints">Delivery Points</span></a>
+                <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-graph-up-arrow me-3 fs-5"></i><span data-lang-key="procurement">Procurement</span></a>
+                <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-file-earmark-check-fill me-3 fs-5"></i><span data-lang-key="invoiceAudit">Invoice Audit</span></a>
+                <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-display-fill me-3 fs-5"></i><span data-lang-key="monitor">Monitor</span></a>
+                <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-lightbulb-fill me-3 fs-5"></i><span data-lang-key="energySolutions">Energy Solutions</span></a>
+                <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-search me-3 fs-5"></i><span data-lang-key="marketOverview">Market Overview</span></a>
+            </nav>
+            <div class="p-2 border-top border-secondary">
+                <div class="nav nav-pills flex-column">
+                    <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-building-fill me-3 fs-5"></i><span data-lang-key="companyProfile">Company Profile</span></a>
+                    <a href="#" class="nav-link d-flex align-items-center mb-1"><i class="bi bi-people-fill me-3 fs-5"></i><span data-lang-key="userManagement">User Management</span></a>
+                    <a href="#" id="help-link" class="nav-link d-flex align-items-center"><i class="bi bi-question-circle-fill me-3 fs-5"></i><span data-lang-key="help">Help</span></a>
+                </div>
+            </div>
+        </aside>
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <!-- Main content -->
+        <div class="main-content d-flex flex-column">
+            <!-- Header -->
+            <header class="navbar navbar-light bg-white sticky-top">
+                <div id="loading-bar-container"><div id="loading-bar"></div></div>
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center">
+                        <button id="menu-button" class="navbar-toggler d-md-none me-2" type="button" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="false"><span class="navbar-toggler-icon"></span></button>
+                        <div class="skeleton-loader me-3"><div class="skeleton skeleton-text" style="width: 250px;"></div></div>
+                        <div id="status-indicator-container" class="actual-content d-none d-flex align-items-center">
+                            <span id="status-indicator" class="me-2" data-bs-toggle="tooltip" data-bs-placement="bottom" title="All Systems Normal"></span>
+                            <h2 id="welcome-header" class="mb-0 fs-4"></h2>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Palette Button -->
+                    <button id="open-search-palette" class="btn btn-outline-secondary btn-sm mx-auto" type="button" aria-label="Open command palette">
+                        <i class="bi bi-search me-2"></i>
+                        <span class="d-none d-sm-inline" data-lang-key="search">Search...</span>
+                        <span class="ms-2 d-none d-lg-inline-block text-muted small" style="opacity: 0.7;">(Ctrl+K)</span>
+                    </button>
+
+                    <div class="ms-auto d-flex align-items-center header-controls">
+                        <!-- Quick Add Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Add New">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-geo-alt-fill me-2"></i><span data-lang-key="addDeliveryPoint">Add Delivery Point</span></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-up-fill me-2"></i><span data-lang-key="uploadInvoice">Upload Invoice</span></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf-fill me-2"></i><span data-lang-key="createNewReport">Create New Report</span></a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Notifications Dropdown -->
+                        <div class="dropdown">
+                            <button id="notification-bell" class="btn btn-link text-secondary notification-bell" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="View notifications" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Notifications">
+                                <i class="bi bi-bell-fill fs-5"></i>
+                                <span class="notification-badge"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end notification-dropdown-menu">
+                                <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <span data-lang-key="notifications">Notifications</span>
+                                    <a href="#" class="small" data-lang-key="markAllAsRead">Mark all as read</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-start" href="#">
+                                        <i class="bi bi-file-earmark-check-fill text-success me-3 fs-5"></i>
+                                        <div>
+                                            <strong data-lang-key="notif1Title">Invoice #5678 Approved</strong>
+                                            <p class="mb-0 small text-muted" data-lang-key="notif1Desc">John Doe approved the invoice for Factory A.</p>
+                                            <small class="text-muted" data-lang-key="notif1Time">15 minutes ago</small>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-start" href="#">
+                                        <i class="bi bi-graph-up-arrow text-primary me-3 fs-5"></i>
+                                        <div>
+                                            <strong data-lang-key="notif2Title">New Trade Executed</strong>
+                                            <p class="mb-0 small text-muted" data-lang-key="notif2Desc">Automated procurement bought 50 MWh for September.</p>
+                                            <small class="text-muted" data-lang-key="notif2Time">1 hour ago</small>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-start" href="#">
+                                        <i class="bi bi-exclamation-triangle-fill text-danger me-3 fs-5"></i>
+                                        <div>
+                                            <strong data-lang-key="notif3Title">Price Alert Triggered</strong>
+                                            <p class="mb-0 small text-muted" data-lang-key="notif3Desc">Market price exceeded your threshold of 200 €/MWh.</p>
+                                            <small class="text-muted" data-lang-key="notif3Time">3 hours ago</small>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center" href="#" data-lang-key="viewAllNotifications">View all notifications</a></li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Settings Menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Settings" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings">
+                                <i class="bi bi-gear-fill fs-5"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><h6 class="dropdown-header" data-lang-key="settings">Settings</h6></li>
+                                <li class="dropdown-item-custom-control">
+                                    <span><i class="bi bi-translate me-2"></i><span data-lang-key="language">Language</span></span>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-secondary" data-lang="en">EN</button>
+                                        <button type="button" class="btn btn-outline-secondary" data-lang="de">DE</button>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="dropdown-item-custom-control">
+                                    <span><i class="bi bi-palette-fill me-2"></i><span data-lang-key="theme">Theme</span></span>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-secondary" data-theme="light"><i class="bi bi-sun-fill"></i></button>
+                                        <button type="button" class="btn btn-outline-secondary" data-theme="dark"><i class="bi bi-moon-stars-fill"></i></button>
+                                        <button type="button" class="btn btn-outline-secondary" data-theme="contrast"><i class="bi bi-circle-half"></i></button>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#alerts-modal"><i class="bi bi-bell me-2"></i><span data-lang-key="setAlerts">Set Alerts</span></a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#kpi-goals-modal"><i class="bi bi-bullseye me-2"></i><span data-lang-key="setGoals">Set Goals</span></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                 <li><a class="dropdown-item" href="#" id="layout-toggle-btn"><i class="bi bi-grid-3x3-gap me-2"></i><span data-lang-key="toggleLayout">Toggle Layout</span></a></li>
+                                 <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" id="zen-mode-btn"><i class="bi bi-fullscreen me-2"></i><span data-lang-key="enterZenMode">Enter Zen Mode</span></a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Profile Menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Profile">
+                                <i class="bi bi-person-circle fs-5"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><h6 class="dropdown-header">John Doe</h6></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle me-2"></i><span data-lang-key="profile">Profile</span></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i><span data-lang-key="logout">Logout</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard content -->
+            <main class="container-fluid p-4">
+                
+                <!-- KPI Bar -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4"><div class="card kpi-card h-100"><div class="card-body"><div class="kpi-content"><h6 class="card-subtitle mb-2 text-muted" data-lang-key="kpiPrice">Current Portfolio Price</h6><p class="card-text fs-3 fw-bold">159.78 €/MWh</p><div class="progress mt-2" style="height: 5px;"><div id="price-progress" class="progress-bar bg-success" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div></div></div><div class="kpi-sparkline"><canvas id="kpi-price-chart"></canvas></div></div></div></div>
+                    <div class="col-md-4"><div class="card kpi-card h-100"><div class="card-body"><div class="kpi-content"><h6 class="card-subtitle mb-2 text-muted" data-lang-key="kpiConsumption">Consumption (This Month)</h6><p class="card-text fs-3 fw-bold">750 MWh</p><div class="progress mt-2" style="height: 5px;"><div id="consumption-progress" class="progress-bar bg-info" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div></div></div><div class="kpi-sparkline"><canvas id="kpi-consumption-chart"></canvas></div></div></div></div>
+                    <div class="col-md-4"><div class="card kpi-card h-100"><div class="card-body"><div class="kpi-content text-center"><h6 class="card-subtitle mb-2 text-muted" data-lang-key="kpiOverdue">Overdue Invoices</h6><p class="card-text fs-3 fw-bold text-danger">1</p></div><div class="kpi-sparkline"><canvas id="kpi-overdue-chart"></canvas></div></div></div></div>
+                </div>
+
+                <div id="dashboard-grid" class="row g-4">
+                    <!-- Monitor -->
+                    <div id="widget-monitor" class="col-12 col-lg-8">
+                        <div class="card h-100 widget-border-data" role="region" aria-labelledby="monitor-title">
+                            <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-speedometer widget-icon me-2"></i>
+                                    <h2 id="monitor-title" class="card-title fs-5 fw-semibold drag-handle" data-lang-key="monitor">Monitor</h2>
+                                    <span class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="monitor" data-lang-key-popover-content="tooltipMonitor"><i class="bi bi-question-circle"></i></span>
+                                    <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-monitor"><i class="bi bi-chat-left-text"></i></span>
+                                </div>
+                                <div class="d-flex align-items-center mt-2 mt-sm-0">
+                                    <div class="d-flex align-items-center small me-3">
+                                        <div class="btn-group btn-group-sm me-2" id="date-range-presets" role="group" aria-label="Date range presets">
+                                            <button type="button" class="btn btn-outline-secondary" data-range="7">7D</button>
+                                            <button type="button" class="btn btn-outline-secondary" data-range="30">30D</button>
+                                            <button type="button" class="btn btn-outline-secondary" data-range="month">M</button>
+                                            <button type="button" class="btn btn-outline-secondary" data-range="ytd">YTD</button>
+                                        </div>
+                                        <label for="from-date" class="form-label me-2 mb-0" data-lang-key="from">from</label><input type="date" id="from-date" class="form-control form-control-sm" aria-label="Start date">
+                                        <label for="to-date" class="form-label ms-2 me-2 mb-0" data-lang-key="to">to</label><input type="date" id="to-date" class="form-control form-control-sm" aria-label="End date">
+                                    </div>
+                                    <div class="dropdown"><button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-download me-2"></i><span data-lang-key="export">Export</span></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="#" id="export-monitor-csv" data-lang-key="exportCsv">Export as CSV</a></li></ul></div>
+                                </div>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="skeleton-loader w-100 h-100">
+                                    <div class="skeleton w-100 h-100"></div>
+                                </div>
+                                <div class="actual-content d-none flex-column h-100">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="form-check form-switch me-3">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="compare-toggle">
+                                            <label class="form-check-label" for="compare-toggle" data-lang-key="compare">Compare</label>
+                                        </div>
+                                        <div id="compare-date-range" class="d-none align-items-center small">
+                                            <label for="compare-from-date" class="form-label me-2 mb-0" data-lang-key="from">from</label><input type="date" id="compare-from-date" class="form-control form-control-sm" aria-label="Compare start date">
+                                            <label for="compare-to-date" class="form-label ms-2 me-2 mb-0" data-lang-key="to">to</label><input type="date" id="compare-to-date" class="form-control form-control-sm" aria-label="Compare end date">
+                                            <button id="update-comparison-btn" class="btn btn-sm btn-secondary ms-2"><i class="bi bi-arrow-clockwise me-2"></i><span data-lang-key="update">Update</span></button>
+                                        </div>
+                                        <div class="form-check form-switch ms-auto">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="forecast-toggle">
+                                            <label class="form-check-label" for="forecast-toggle" data-lang-key="forecast">Forecast</label>
+                                        </div>
+                                    </div>
+                                    <ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" href="#" data-lang-key="all">All</a></li><li class="nav-item"><a class="nav-link" href="#" data-lang-key="point1">Point 1</a></li><li class="nav-item"><a class="nav-link" href="#" data-lang-key="point2">Point 2</a></li><li class="nav-item"><a class="nav-link" href="#" data-lang-key="point3">Point 3</a></li></ul>
+                                    <div class="mt-3 flex-grow-1"><canvas id="monitorChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Procurement -->
+                    <div id="widget-procurement" class="col-12 col-lg-4">
+                        <div class="card h-100 widget-border-finance" role="region" aria-labelledby="procurement-title">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="bi bi-stack widget-icon me-2"></i>
+                                <h2 id="procurement-title" class="card-title fs-5 fw-semibold drag-handle mb-0 me-2" data-lang-key="procurement">Procurement</h2>
+                                <span class="help-icon" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="procurement" data-lang-key-popover-content="tooltipProcurement"><i class="bi bi-question-circle"></i></span>
+                                <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-procurement"><i class="bi bi-chat-left-text"></i></span>
+                                <div class="ms-auto d-flex align-items-center small text-muted">
+                                    <span class="pulsing-dot me-2"></span>
+                                    <span id="last-updated-procurement" aria-live="polite"></span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="skeleton-loader">
+                                    <div class="skeleton mx-auto" style="height: 120px; width: 100%;"></div>
+                                    <div class="skeleton skeleton-text mt-3 w-100"></div>
+                                    <div class="skeleton skeleton-text w-75"></div>
+                                    <div class="skeleton skeleton-text w-50"></div>
+                                </div>
+                                <div class="actual-content d-none">
+                                    <canvas id="procurementChart" height="120"></canvas>
+                                    <div class="mt-3 small">
+                                        <div class="d-flex justify-content-between"><span class="text-muted" data-lang-key="portfolioDev">Portfolio Development:</span><span class="fw-semibold">159.78 €/MWh</span></div>
+                                        <div class="d-flex justify-content-between"><span class="text-muted" data-lang-key="model">Model:</span><span class="fw-semibold" data-lang-key="stopLoss">Trailing Stop Loss</span></div>
+                                        <div class="d-flex justify-content-between"><span class="text-muted" data-lang-key="procurement">Procurement:</span><span class="fw-semibold text-success">AUTO</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Audit -->
+                    <div id="widget-invoice-audit" class="col-12 col-lg-4">
+                        <div class="card h-100 widget-border-finance" role="region" aria-labelledby="invoice-audit-title">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="bi bi-file-earmark-check-fill widget-icon me-2"></i>
+                                <h2 id="invoice-audit-title" class="card-title fs-5 fw-semibold drag-handle mb-0" data-lang-key="invoiceAudit">Invoice Audit</h2>
+                                <span class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="invoiceAudit" data-lang-key-popover-content="tooltipInvoiceAudit"><i class="bi bi-question-circle"></i></span>
+                                <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-invoice-audit"><i class="bi bi-chat-left-text"></i></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="skeleton-loader">
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                </div>
+                                <div class="actual-content d-none">
+                                    <div class="d-flex justify-content-between small text-muted mb-2"><span data-lang-key="january">January '23</span><span data-lang-key="february">February '23</span></div>
+                                    <ul class="list-unstyled mb-3">
+                                        <li class="d-flex align-items-center justify-content-between small mb-2"><span>MaLo 5xxxxxxxxxx01</span><i class="bi bi-check-circle-fill text-success"></i></li>
+                                        <li class="d-flex align-items-center justify-content-between small mb-2"><span>MaLo 5xxxxxxxxxx02</span><i class="bi bi-check-circle-fill text-success"></i></li>
+                                        <li class="d-flex align-items-center justify-content-between small mb-2"><span>MaLo 5xxxxxxxxxx03</span><i class="bi bi-x-circle-fill text-danger"></i></li>
+                                        <li class="d-flex align-items-center justify-content-between small"><span>MaLo 5xxxxxxxxxx04</span><i class="bi bi-arrow-right-circle-fill text-warning"></i></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Due Dates -->
+                    <div id="widget-due-dates" class="col-12 col-lg-4">
+                        <div class="card h-100 widget-border-admin" role="region" aria-labelledby="due-dates-title">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="bi bi-calendar2-event-fill widget-icon me-2"></i>
+                                <h2 id="due-dates-title" class="card-title fs-5 fw-semibold drag-handle mb-0" data-lang-key="upcomingDueDates">Upcoming Due Dates</h2>
+                                <span class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="upcomingDueDates" data-lang-key-popover-content="tooltipDueDates"><i class="bi bi-question-circle"></i></span>
+                                <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-due-dates"><i class="bi bi-chat-left-text"></i></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="skeleton-loader">
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-75"></div>
+                                </div>
+                                <div class="actual-content d-none">
+                                    <div id="due-dates-list">
+                                        <ul class="list-group list-group-flush">
+                                          <li class="list-group-item d-flex justify-content-between align-items-center small"><div><span data-lang-key="invoice">Invoice</span> #5679<br><span class="text-muted" data-lang-key="due">Due:</span> September 1, 2025</div><button class="btn btn-sm btn-outline-secondary add-to-calendar-btn" data-title="Invoice #5679 Due" data-date="2025-09-01"><i class="bi bi-calendar-plus me-2"></i><span data-lang-key="addToCalendar">Add to Calendar</span></button></li>
+                                          <li class="list-group-item d-flex justify-content-between align-items-center small"><div><span data-lang-key="invoice">Invoice</span> #5680<br><span class="text-muted" data-lang-key="due">Due:</span> September 5, 2025</div><button class="btn btn-sm btn-outline-secondary add-to-calendar-btn" data-title="Invoice #5680 Due" data-date="2025-09-05"><i class="bi bi-calendar-plus me-2"></i><span data-lang-key="addToCalendar">Add to Calendar</span></button></li>
+                                          <li class="list-group-item d-flex justify-content-between align-items-center small"><div><span data-lang-key="regulatoryReport">Regulatory Report</span><br><span class="text-muted" data-lang-key="due">Due:</span> September 15, 2025</div><button class="btn btn-sm btn-outline-secondary add-to-calendar-btn" data-title="Regulatory Report Due" data-date="2025-09-15"><i class="bi bi-calendar-plus me-2"></i><span data-lang-key="addToCalendar">Add to Calendar</span></button></li>
+                                        </ul>
+                                    </div>
+                                    <div id="due-dates-empty-state" class="d-none text-center p-4">
+                                        <i class="bi bi-calendar2-check-fill fs-1 text-success"></i>
+                                        <p class="mt-2" data-lang-key="allCaughtUp">All caught up!</p>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <button class="btn btn-sm btn-outline-danger" id="clear-due-dates-btn"><i class="bi bi-trash me-2"></i><span data-lang-key="clear">Clear</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost Allocation -->
+                    <div id="widget-cost-allocation" class="col-12 col-lg-4">
+                        <div class="card h-100 widget-border-finance" role="region" aria-labelledby="cost-allocation-title">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="bi bi-pie-chart-fill widget-icon me-2"></i>
+                                <h2 id="cost-allocation-title" class="card-title fs-5 fw-semibold drag-handle mb-0" data-lang-key="costAllocation">Cost Allocation</h2>
+                                <span class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="costAllocation" data-lang-key-popover-content="tooltipCostAllocation"><i class="bi bi-question-circle"></i></span>
+                                <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-cost-allocation"><i class="bi bi-chat-left-text"></i></span>
+                            </div>
+                            <div class="card-body d-flex justify-content-center align-items-center">
+                                <div class="skeleton-loader w-100 h-100 d-flex justify-content-center align-items-center">
+                                    <div class="skeleton" style="width: 200px; height: 200px; border-radius: 50%;"></div>
+                                </div>
+                                <div class="actual-content d-none">
+                                    <canvas id="costAllocationChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Overview -->
+                    <div id="widget-market-overview" class="col-12 col-lg-8">
+                        <div class="card h-100 widget-border-data" role="region" aria-labelledby="market-overview-title">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="bi bi-bar-chart-line-fill widget-icon me-2"></i>
+                                <h2 id="market-overview-title" class="card-title fs-5 fw-semibold drag-handle mb-0 me-2" data-lang-key="marketOverview">Market Overview</h2>
+                                <span class="help-icon" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="marketOverview" data-lang-key-popover-content="tooltipMarketOverview"><i class="bi bi-question-circle"></i></span>
+                                <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-market-overview"><i class="bi bi-chat-left-text"></i></span>
+                                <div class="ms-auto d-flex align-items-center small text-muted">
+                                    <span class="pulsing-dot me-2"></span>
+                                    <span id="last-updated-market" aria-live="polite"></span>
+                                </div>
+                                <div class="dropdown ms-3"><button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-download me-2"></i><span data-lang-key="export">Export</span></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="#" id="export-market-csv" data-lang-key="exportCsv">Export as CSV</a></li></ul></div>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="skeleton-loader w-100 h-100 d-flex flex-column justify-content-around">
+                                    <div class="skeleton w-100" style="height: 45%;"></div>
+                                    <div class="skeleton w-100" style="height: 45%;"></div>
+                                </div>
+                                <div class="actual-content w-100 h-100 d-none flex-column">
+                                    <div class="mb-4 flex-grow-1"><canvas id="marketChart1"></canvas></div>
+                                    <div class="flex-grow-1"><canvas id="marketChart2"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What-If Scenario Planner -->
+                    <div id="widget-scenario-planner" class="col-12 col-lg-4">
+                        <div class="card h-100 widget-border-finance" role="region" aria-labelledby="scenario-planner-title">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="bi bi-calculator-fill widget-icon me-2"></i>
+                                <h2 id="scenario-planner-title" class="card-title fs-5 fw-semibold drag-handle mb-0" data-lang-key="scenarioPlanner">"What-If" Scenario Planner</h2>
+                                <span class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="scenarioPlanner" data-lang-key-popover-content="tooltipScenarioPlanner"><i class="bi bi-question-circle"></i></span>
+                                <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-scenario-planner"><i class="bi bi-chat-left-text"></i></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="hypothetical-price" class="form-label small" data-lang-key="hypotheticalPrice">Hypothetical Market Price (€/MWh)</label>
+                                    <input type="number" class="form-control" id="hypothetical-price" value="210">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="monthly-consumption" class="form-label small" data-lang-key="monthlyConsumption">Monthly Consumption (MWh)</label>
+                                    <input type="number" class="form-control" id="monthly-consumption" value="750">
+                                </div>
+                                <button id="calculate-scenario-btn" class="btn btn-primary w-100"><i class="bi bi-calculator me-2"></i><span data-lang-key="calculate">Calculate</span></button>
+                                <div class="text-center mt-3">
+                                    <p class="text-muted mb-1" data-lang-key="estimatedCost">Estimated Monthly Cost:</p>
+                                    <p id="estimated-cost" class="fs-4 fw-bold">€157,500.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Energy Services -->
+                    <div id="widget-energy-services" class="col-12 col-lg-4">
+                        <div class="card h-100 widget-border-admin" role="region" aria-labelledby="energy-services-title">
+                            <div class="card-header d-flex justify-content-between align-items-start">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-gear-wide-connected widget-icon me-2"></i>
+                                    <h2 id="energy-services-title" class="card-title fs-5 fw-semibold drag-handle mb-0" data-lang-key="energyServices">Energy Services</h2>
+                                    <span class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="energyServices" data-lang-key-popover-content="tooltipEnergyServices"><i class="bi bi-question-circle"></i></span>
+                                    <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-energy-services"><i class="bi bi-chat-left-text"></i></span>
+                                </div>
+                                <span class="badge bg-light text-dark" data-lang-key="wzCode">WZ-Code: 27.40.0</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="skeleton-loader">
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-75"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                </div>
+                                <div class="actual-content d-none">
+                                    <ul class="list-unstyled">
+                                        <li class="d-flex align-items-center small mb-3"><span class="d-inline-flex align-items-center justify-content-center me-3 bg-success-subtle text-success rounded-circle" style="width: 24px; height: 24px;">✓</span><span data-lang-key="service1">Service Agreement Compliance</span></li>
+                                        <li class="d-flex align-items-center small mb-3"><span class="d-inline-flex align-items-center justify-content-center me-3 bg-success-subtle text-success rounded-circle" style="width: 24px; height: 24px;">✓</span><span data-lang-key="service2">Regulatory Reporting Submitted</span></li>
+                                        <li class="d-flex align-items-center small mb-3"><span class="d-inline-flex align-items-center justify-content-center me-3 bg-success-subtle text-success rounded-circle" style="width: 24px; height: 24px;">✓</span><span data-lang-key="service3">Efficiency Audit Completed</span></li>
+                                        <li class="d-flex align-items-center small"><span class="d-inline-flex align-items-center justify-content-center me-3 bg-success-subtle text-success rounded-circle" style="width: 24px; height: 24px;">✓</span><span data-lang-key="service4">Renewable Energy Credits Verified</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Audit Trail -->
+                    <div id="widget-audit-trail" class="col-12 col-lg-8">
+                        <div class="card h-100 widget-border-admin" role="region" aria-labelledby="audit-trail-title">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="bi bi-list-check widget-icon me-2"></i>
+                                <h2 id="audit-trail-title" class="card-title fs-5 fw-semibold drag-handle mb-0" data-lang-key="auditTrail">Audit Trail</h2>
+                                <span class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-lang-key-popover-title="auditTrail" data-lang-key-popover-content="tooltipAuditTrail"><i class="bi bi-question-circle"></i></span>
+                                <span class="comment-icon ms-2" data-bs-toggle="modal" data-bs-target="#comment-modal" data-widget-id="widget-audit-trail"><i class="bi bi-chat-left-text"></i></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="skeleton-loader">
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-100"></div>
+                                    <div class="skeleton skeleton-text w-75"></div>
+                                </div>
+                                <div class="actual-content d-none">
+                                    <ul class="list-group list-group-flush">
+                                      <li class="list-group-item d-flex justify-content-between align-items-center small"><span class="text-muted"><i class="bi bi-check-circle-fill text-success me-2"></i>10:45 AM</span><span><span data-lang-key="audit1User">User</span> <strong>John Doe</strong> <span data-lang-key="audit1Action">approved Invoice #5678</span>.</span><span class="badge bg-success-subtle text-success-emphasis" data-lang-key="approved">Approved</span></li>
+                                      <li class="list-group-item d-flex justify-content-between align-items-center small"><span class="text-muted"><i class="bi bi-cpu-fill text-primary me-2"></i>10:42 AM</span><span><span data-lang-key="audit2Action">Automated procurement executed a trade</span>.</span><span class="badge bg-primary-subtle text-primary-emphasis" data-lang-key="system">System</span></li>
+                                      <li class="list-group-item d-flex justify-content-between align-items-center small"><span class="text-muted"><i class="bi bi-pencil-fill text-warning me-2"></i><span data-lang-key="yesterday">Yesterday</span></span><span><span data-lang-key="audit3User">User</span> <strong>Jane Smith</strong> <span data-lang-key="audit3Action">updated delivery point "Factory A"</span>.</span><span class="badge bg-warning-subtle text-warning-emphasis" data-lang-key="updated">Updated</span></li>
+                                      <li class="list-group-item d-flex justify-content-between align-items-center small"><span class="text-muted"><i class="bi bi-box-arrow-in-right text-secondary me-2"></i><span data-lang-key="yesterday">Yesterday</span></span><span><span data-lang-key="audit4User">User</span> <strong>John Doe</strong> <span data-lang-key="audit4Action">logged in</span>.</span><span class="badge bg-secondary-subtle text-secondary-emphasis" data-lang-key="login">Login</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal fade" id="drilldown-modal" tabindex="-1" aria-labelledby="drilldown-modal-label" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="drilldown-modal-label" data-lang-key="detailedView">Detailed View</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><canvas id="drilldown-chart"></canvas></div></div></div></div>
+    <div class="modal fade" id="alerts-modal" tabindex="-1" aria-labelledby="alerts-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="alerts-modal-label" data-lang-key="manageAlerts">Manage Alerts</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><form id="alerts-form"><div class="mb-3"><label for="price-threshold" class="form-label" data-lang-key="priceThreshold">Market Price Threshold (€/MWh)</label><input type="number" class="form-control" id="price-threshold" placeholder="e.g., 200"></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="price-alert-enabled"><label class="form-check-label" for="price-alert-enabled" data-lang-key="enablePriceAlert">Enable Price Alert</label></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i><span data-lang-key="close">Close</span></button><button type="button" class="btn btn-primary" id="save-alerts-btn"><i class="bi bi-check-lg me-2"></i><span data-lang-key="saveChanges">Save Changes</span></button></div></div></div></div>
+    <div class="modal fade" id="report-modal" tabindex="-1" aria-labelledby="report-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="report-modal-label" data-lang-key="generatePdfReport">Generate PDF Report</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><p data-lang-key="selectWidgets">Select the widgets to include in the report:</p><form id="report-form"><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-market-overview" id="check-market" checked><label class="form-check-label" for="check-market" data-lang-key="marketOverview">Market Overview</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-procurement" id="check-procurement" checked><label class="form-check-label" for="check-procurement" data-lang-key="procurement">Procurement</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-invoice-audit" id="check-invoice" checked><label class="form-check-label" for="check-invoice" data-lang-key="invoiceAudit">Invoice Audit</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-energy-services" id="check-services" checked><label class="form-check-label" for="check-services" data-lang-key="energyServices">Energy Services</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-monitor" id="check-monitor" checked><label class="form-check-label" for="check-monitor" data-lang-key="monitor">Monitor</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-scenario-planner" id="check-scenario-planner" checked><label class="form-check-label" for="check-scenario-planner" data-lang-key="scenarioPlanner">"What-If" Scenario Planner</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-audit-trail" id="check-audit-trail" checked><label class="form-check-label" for="check-audit-trail" data-lang-key="auditTrail">Audit Trail</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-due-dates" id="check-due-dates" checked><label class="form-check-label" for="check-due-dates" data-lang-key="upcomingDueDates">Upcoming Due Dates</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="widget-cost-allocation" id="check-cost-allocation" checked><label class="form-check-label" for="check-cost-allocation" data-lang-key="costAllocation">Cost Allocation</label></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i><span data-lang-key="cancel">Cancel</span></button><button type="button" class="btn btn-primary" id="generate-pdf-btn"><i class="bi bi-file-earmark-pdf me-2"></i><span data-lang-key="generatePdf">Generate PDF</span></button></div></div></div></div>
+    <div class="modal fade" id="kpi-goals-modal" tabindex="-1" aria-labelledby="kpi-goals-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="kpi-goals-modal-label" data-lang-key="setKpiGoals">Set KPI Goals</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><form id="kpi-goals-form"><div class="mb-3"><label for="consumption-goal" class="form-label" data-lang-key="consumptionGoal">Consumption Goal (MWh)</label><input type="number" class="form-control" id="consumption-goal" placeholder="e.g., 1000"></div><div class="mb-3"><label for="price-goal" class="form-label" data-lang-key="priceGoal">Price Goal (€/MWh)</label><input type="number" class="form-control" id="price-goal" placeholder="e.g., 150"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i><span data-lang-key="close">Close</span></button><button type="button" class="btn btn-primary" id="save-kpi-goals-btn"><i class="bi bi-check-lg me-2"></i><span data-lang-key="saveGoals">Save Goals</span></button></div></div></div></div>
+    <div class="modal fade" id="comment-modal" tabindex="-1" aria-labelledby="comment-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="comment-modal-label" data-lang-key="comments">Comments</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div id="comment-list" class="mb-3"></div><form id="comment-form"><div class="mb-3"><textarea class="form-control" id="comment-text" rows="3" data-lang-placeholder="addCommentPlaceholder" placeholder="Add a comment..." required></textarea></div><button type="submit" class="btn btn-primary"><i class="bi bi-send me-2"></i><span data-lang-key="postComment">Post Comment</span></button></form></div></div></div></div>
+
+    <!-- Command Palette Modal -->
+    <div class="modal fade" id="command-palette-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content command-palette-content">
+                <div class="modal-body p-0">
+                    <div class="d-flex align-items-center p-2">
+                       <i class="bi bi-search text-muted fs-5 me-3 ms-2"></i>
+                       <input type="text" id="command-palette-input" class="form-control form-control-lg border-0 shadow-none" data-lang-placeholder="searchPlaceholder" placeholder="Search invoices, delivery points, or type a command...">
+                    </div>
+                    <!-- Search results can be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="alert-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header"><strong class="me-auto text-danger" data-lang-key="priceAlert">Price Alert!</strong><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button></div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
+
+
+    <!-- Third-party JS Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="dashboard.js"></script>
+</body>
+</html>
