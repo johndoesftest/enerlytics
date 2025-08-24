@@ -75,7 +75,26 @@ document.addEventListener('DOMContentLoaded', () => {
             tooltipMarketOverview: "Displays current and historical energy market price trends to provide context for procurement decisions.",
             tooltipScenarioPlanner: "Allows you to estimate future energy costs by inputting hypothetical market prices and consumption levels.",
             tooltipEnergyServices: "Tracks the status of various energy-related services and compliance tasks.",
-            tooltipAuditTrail: "Logs recent user and system activities within the dashboard for transparency and security."
+            tooltipAuditTrail: "Logs recent user and system activities within the dashboard for transparency and security.",
+            // Tour
+            tourWelcomeTitle: "Welcome to the Dashboard!",
+            tourWelcomeText: "Let's take a quick tour of the key features to get you started.",
+            tourKpiTitle: "Key Performance Indicators",
+            tourKpiText: "This top bar gives you a high-level overview of your most important metrics at a glance.",
+            tourMonitorTitle: "Interactive Charts",
+            tourMonitorText: "Most widgets contain interactive charts. You can hover over them for details or even click on data points for a deeper drill-down view.",
+            tourDragTitle: "Customizable Layout",
+            tourDragText: "You can personalize your dashboard by clicking and dragging widgets by their titles to rearrange them.",
+            tourSettingsTitle: "Access Settings",
+            tourSettingsText: "This menu contains options to customize your experience, such as changing the language or theme.",
+            tourThemeTitle: "Switch Themes",
+            tourThemeText: "Instantly switch between light, dark, and high-contrast modes to suit your preference.",
+            tourHelpTitle: "Need Help?",
+            tourHelpText: "You can restart this tour anytime by clicking the 'Help' button in the sidebar. Enjoy exploring your dashboard!",
+            tourNext: "Next",
+            tourBack: "Back",
+            tourFinish: "Finish",
+            tourSkip: "Skip"
         },
         de: {
             // Welcome Header
@@ -151,7 +170,26 @@ document.addEventListener('DOMContentLoaded', () => {
             tooltipMarketOverview: "Zeigt aktuelle und historische Preisentwicklungen am Energiemarkt, um einen Kontext für Beschaffungsentscheidungen zu schaffen.",
             tooltipScenarioPlanner: "Ermöglicht die Schätzung zukünftiger Energiekosten durch Eingabe hypothetischer Marktpreise und Verbrauchsmengen.",
             tooltipEnergyServices: "Verfolgt den Status verschiedener energiebezogener Dienstleistungen und Compliance-Aufgaben.",
-            tooltipAuditTrail: "Protokolliert die letzten Benutzer- und Systemaktivitäten im Dashboard zur Transparenz und Sicherheit."
+            tooltipAuditTrail: "Protokolliert die letzten Benutzer- und Systemaktivitäten im Dashboard zur Transparenz und Sicherheit.",
+            // Tour
+            tourWelcomeTitle: "Willkommen zum Dashboard!",
+            tourWelcomeText: "Lassen Sie uns eine kurze Tour durch die wichtigsten Funktionen machen, um Ihnen den Einstieg zu erleichtern.",
+            tourKpiTitle: "Leistungskennzahlen (KPIs)",
+            tourKpiText: "Diese obere Leiste gibt Ihnen einen schnellen Überblick über Ihre wichtigsten Kennzahlen.",
+            tourMonitorTitle: "Interaktive Diagramme",
+            tourMonitorText: "Die meisten Widgets enthalten interaktive Diagramme. Sie können mit der Maus darüber fahren, um Details zu sehen, oder auf Datenpunkte klicken, um eine tiefere Ansicht zu erhalten.",
+            tourDragTitle: "Anpassbares Layout",
+            tourDragText: "Sie können Ihr Dashboard personalisieren, indem Sie Widgets an ihren Titeln anklicken und ziehen, um sie neu anzuordnen.",
+            tourSettingsTitle: "Einstellungen aufrufen",
+            tourSettingsText: "Dieses Menü enthält Optionen zur Anpassung Ihrer Erfahrung, wie z.B. das Ändern der Sprache oder des Themas.",
+            tourThemeTitle: "Thema wechseln",
+            tourThemeText: "Wechseln Sie sofort zwischen hellen, dunklen und kontrastreichen Modi, je nach Ihrer Vorliebe.",
+            tourHelpTitle: "Benötigen Sie Hilfe?",
+            tourHelpText: "Sie können diese Tour jederzeit neu starten, indem Sie auf die Schaltfläche 'Hilfe' in der Seitenleiste klicken. Viel Spaß beim Erkunden Ihres Dashboards!",
+            tourNext: "Weiter",
+            tourBack: "Zurück",
+            tourFinish: "Fertig",
+            tourSkip: "Überspringen"
         }
     };
 
@@ -971,7 +1009,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Data Comparison & Forecast Tool ---
     const compareToggle = document.getElementById('compare-toggle');
     const compareDateRange = document.getElementById('compare-date-range');
-    const updateComparisonBtn = document.getElementById('update-comparison-btn');
     const forecastToggle = document.getElementById('forecast-toggle');
     const compareFromDateInput = document.getElementById('compare-from-date');
     const compareToDateInput = document.getElementById('compare-to-date');
@@ -1027,8 +1064,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (updateComparisonBtn) {
-        updateComparisonBtn.addEventListener('click', updateComparisonChart);
+    if (compareFromDateInput) {
+        compareFromDateInput.addEventListener('change', updateComparisonChart);
+    }
+    if (compareToDateInput) {
+        compareToDateInput.addEventListener('change', updateComparisonChart);
     }
     
     if (forecastToggle) {
@@ -1111,82 +1151,78 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- Onboarding Tour ---
-    const tour = new Shepherd.Tour({
-        useModalOverlay: true,
-        defaultStepOptions: {
-            classes: 'shadow-md bg-light',
-            scrollTo: true
+    let tour; // Keep tour instance in a broader scope
+
+    function setupTour() {
+        if (tour && tour.isActive()) {
+            return;
         }
-    });
+        const lang = localStorage.getItem('language') || 'en';
+        const t = (key) => translations[lang][key] || translations['en'][key];
 
-    tour.addStep({
-        id: 'step-1',
-        text: 'Welcome to your Energy Management Dashboard! Let\'s take a quick tour of the key features.',
-        attachTo: { element: '#open-search-palette', on: 'bottom' },
-        buttons: [
-            {
-                text: 'Skip',
-                action: tour.complete,
-                classes: 'shepherd-button-secondary'
-            },
-            {
-                text: 'Next',
-                action: tour.next
+        tour = new Shepherd.Tour({
+            useModalOverlay: true,
+            defaultStepOptions: {
+                classes: 'shadow-md',
+                scrollTo: { behavior: 'smooth', block: 'center' },
+                cancelIcon: {
+                    enabled: true
+                }
             }
-        ]
-    });
-    tour.addStep({
-        id: 'step-2',
-        text: 'You can rearrange the widgets by dragging their titles to customize your layout.',
-        attachTo: { element: '#widget-monitor .drag-handle', on: 'bottom' },
-        buttons: [
-            {
-                text: 'Back',
-                action: tour.back,
-                classes: 'shepherd-button-secondary'
-            },
-            {
-                text: 'Next',
-                action: tour.next
-            }
-        ]
-    });
-    tour.addStep({
-        id: 'step-3',
-        text: 'Click on a bar in the Monitor chart to see a detailed daily breakdown.',
-        attachTo: { element: '#widget-monitor', on: 'top' },
-        buttons: [
-            {
-                text: 'Back',
-                action: tour.back,
-                classes: 'shepherd-button-secondary'
-            },
-            {
-                text: 'Next',
-                action: tour.next
-            }
-        ]
-    });
-    tour.addStep({
-        id: 'step-4',
-        text: 'Use the settings menu to change the theme and layout.',
-        attachTo: { element: '[aria-label="Settings"]', on: 'bottom' },
-        buttons: [
-            {
-                text: 'Back',
-                action: tour.back,
-                classes: 'shepherd-button-secondary'
-            },
-            {
-                text: 'Finish',
-                action: tour.complete
-            }
-        ]
-    });
+        });
 
+        const steps = [
+            { id: 'step-1', title: t('tourWelcomeTitle'), text: t('tourWelcomeText'), attachTo: { element: '#welcome-header', on: 'bottom' } },
+            { id: 'step-2', title: t('tourKpiTitle'), text: t('tourKpiText'), attachTo: { element: '.row.g-4.mb-4', on: 'bottom' } },
+            { id: 'step-3', title: t('tourMonitorTitle'), text: t('tourMonitorText'), attachTo: { element: '#widget-monitor', on: 'top' } },
+            { id: 'step-4', title: t('tourDragTitle'), text: t('tourDragText'), attachTo: { element: '#widget-monitor .drag-handle', on: 'bottom' } },
+            { id: 'step-5', title: t('tourHelpTitle'), text: t('tourHelpText'), attachTo: { element: '#help-link', on: 'top' } }
+        ];
+
+        steps.forEach((step, index) => {
+            const totalSteps = steps.length;
+            const originalText = step.text;
+            tour.addStep({
+                ...step,
+                text: () => {
+                    const progress = `<div class="shepherd-progress"><span>${index + 1} / ${totalSteps}</span></div>`;
+                    return `${originalText}${progress}`;
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.cancel();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: t('tourSkip')
+                    },
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: t('tourBack'),
+                        secondary: true,
+                        disabled: index === 0
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: index === totalSteps - 1 ? t('tourFinish') : t('tourNext')
+                    }
+                ]
+            });
+        });
+    }
+    
     setTimeout(() => {
-        if (document.querySelector('#open-search-palette')) {
-            tour.start();
+        if (document.querySelector('#welcome-header')) {
+            setupTour();
+            if (!localStorage.getItem('tour_completed')) {
+                tour.start();
+                localStorage.setItem('tour_completed', 'true');
+            }
         }
     }, 2000); 
     
@@ -1194,7 +1230,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (helpLink) {
         helpLink.addEventListener('click', (e) => {
             e.preventDefault();
-            tour.start();
+            if (tour) {
+                if (!tour.isActive()) {
+                    tour.start();
+                }
+            } else {
+                setupTour();
+                tour.start();
+            }
         });
     }
 

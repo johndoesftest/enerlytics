@@ -128,7 +128,7 @@
                         </div>
                         
                         <!-- Settings Menu -->
-                        <div class="dropdown">
+                        <div id="settings-dropdown-container" class="dropdown">
                             <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Settings" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings">
                                 <i class="bi bi-gear-fill fs-5"></i>
                             </button>
@@ -142,7 +142,7 @@
                                     </div>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li class="dropdown-item-custom-control">
+                                <li id="tour-theme-control" class="dropdown-item-custom-control">
                                     <span><i class="bi bi-palette-fill me-2"></i><span data-lang-key="theme">Theme</span></span>
                                     <div class="btn-group btn-group-sm">
                                         <button type="button" class="btn btn-outline-secondary" data-theme="light"><i class="bi bi-sun-fill"></i></button>
@@ -224,7 +224,6 @@
                                         <div id="compare-date-range" class="d-none align-items-center small">
                                             <label for="compare-from-date" class="form-label me-2 mb-0" data-lang-key="from">from</label><input type="date" id="compare-from-date" class="form-control form-control-sm" aria-label="Compare start date">
                                             <label for="compare-to-date" class="form-label ms-2 me-2 mb-0" data-lang-key="to">to</label><input type="date" id="compare-to-date" class="form-control form-control-sm" aria-label="Compare end date">
-                                            <button id="update-comparison-btn" class="btn btn-sm btn-secondary ms-2"><i class="bi bi-arrow-clockwise me-2"></i><span data-lang-key="update">Update</span></button>
                                         </div>
                                         <div class="form-check form-switch ms-auto">
                                             <input class="form-check-input" type="checkbox" role="switch" id="forecast-toggle">
